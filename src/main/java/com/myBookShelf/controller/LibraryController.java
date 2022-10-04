@@ -5,9 +5,8 @@ import com.myBookShelf.service.LibraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class LibraryController {
@@ -34,6 +33,16 @@ public class LibraryController {
             response.setMessage("Book already exist");
 
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        }
+    }
+
+    @GetMapping("/book/{id}")
+    public Book getBookById(@PathVariable(value="id")String id) {
+        try {
+            Book book = repository.findById(id).get();
+            return book;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 }
