@@ -12,7 +12,7 @@ public class RepositoryCustomImpl implements LibraryRepositoryCustom{
     LibraryRepository repository;
 
     @Override
-    public List<Book> findAllBooksByAuthorName(String author) {
+    public List<Book> findAllByAuthor(String author) {
         List<Book> allBooks = repository.findAll();
         List<Book> booksByAuthorName = new ArrayList<>();
         for (Book book : allBooks) {
