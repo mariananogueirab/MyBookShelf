@@ -17,7 +17,7 @@ public class Book {
     @Id
     private String id;
 
-    @Column(name = "bookName")
+    @Column(name = "book_name")
     private String bookName;
 
     @Column(name = "isbn")
@@ -26,13 +26,13 @@ public class Book {
     @Column(name = "author")
     private String author;
 
-    @Column(name = "imgUrl")
+    @Column(name = "img_url")
     private String imgUrl;
 
     @Column(name = "year")
     private int year;
 
-    @Column(name = "isRead")
+    @Column(name = "is_read")
     private int isRead;
 
 }
