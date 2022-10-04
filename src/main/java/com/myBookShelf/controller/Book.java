@@ -33,6 +33,6 @@ public class Book {
     private int year;
 
     @Column(name = "isRead")
-    private boolean isRead;
+    private int isRead;
 
 }
