@@ -2,7 +2,6 @@ package com.myBookShelf.controller;
 
 import com.myBookShelf.repository.LibraryRepository;
 import com.myBookShelf.service.LibraryService;
-import com.zaxxer.hikari.SQLExceptionOverride;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,7 @@ public class LibraryController {
     @Autowired
     Response response;
 
-    @PostMapping("/addBook")
+    @PostMapping("/book")
     public ResponseEntity addBook(@RequestBody Book book) {
         String id = libraryService.buildId(book.getIsbn(), book.getYear());
 
@@ -42,8 +41,7 @@ public class LibraryController {
     @GetMapping("/book/{id}")
     public Book getBookById(@PathVariable(value="id")String id) {
         try {
-            Book book = repository.findById(id).get();
-            return book;
+            return repository.findById(id).get();
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -54,12 +52,12 @@ public class LibraryController {
         return repository.findAllByAuthor(author);
     }
 
-    @GetMapping("/books")
+    @GetMapping("/all-books")
     public List<Book> getAllBooks() {
         return repository.findAll();
     }
 
-    @PutMapping("/updateBook/{id}")
+    @PutMapping("/book/{id}")
     public ResponseEntity updateBookById(@PathVariable(value = "id") String id, @RequestBody Book book) {
         try {
             Book existingBook = repository.findById(id).get();
@@ -72,6 +70,20 @@ public class LibraryController {
             repository.save(book);
 
             return new ResponseEntity(book, HttpStatus.CREATED);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/book/{id}")
+    public ResponseEntity deleteBook(@PathVariable(value = "id") String id){
+        try {
+            repository.deleteById(id);
+
+            response.setId(id);
+            response.setMessage("Book deleted");
+
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
