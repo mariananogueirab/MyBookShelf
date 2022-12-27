@@ -83,7 +83,7 @@ public class LibraryController {
             response.setId(id);
             response.setMessage("Book deleted");
 
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
