@@ -40,27 +40,39 @@ public class LibraryController {
             response.setId(id);
             response.setMessage("Book already exist");
 
-            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
     }
 
     @GetMapping("/book/{id}")
-    public Book getBookById(@PathVariable(value="id")String id) {
+    public ResponseEntity<?> getBookById(@PathVariable(value="id")String id) {
         try {
-            return repository.findById(id).orElseThrow();
+            Book book = repository.findById(id).orElseThrow();
+            return new ResponseEntity<>(book, HttpStatus.OK);
         } catch (Exception e) {
             logger.info("Book doesn't found");
+            response.setId(id);
+            response.setMessage("Book doesn't found");
 
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping("/book/")
-    public List<Book> getBookByAuthorName(@RequestParam(value = "author") String author) {
+    public ResponseEntity<?> getBookByAuthorName(@RequestParam(value = "author") String author) {
         try{
-            return repository.findAllByAuthor(author);
+            List<Book> books = repository.findAllByAuthor(author);
+            if (!books.isEmpty()) {
+                return new ResponseEntity<>(books, HttpStatus.OK);
+            } else {
+                response.setId(author);
+                response.setMessage("Book doesn't found");
+                logger.info("Book doesn't found");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
         } catch (Exception e) {
-            logger.info("Book doesn't found");
+            logger.info(e.getMessage());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
@@ -72,7 +84,7 @@ public class LibraryController {
     }
 
     @PutMapping("/book/{id}")
-    public ResponseEntity<Book> updateBookById(@PathVariable(value = "id") String id, @RequestBody Book book) {
+    public ResponseEntity<?> updateBookById(@PathVariable(value = "id") String id, @RequestBody Book book) {
         try {
             Book existingBook = repository.findById(id).orElseThrow();
             existingBook.setBookName(book.getBookName());
@@ -85,8 +97,9 @@ public class LibraryController {
             logger.info("Book updated");
             return new ResponseEntity<>(book, HttpStatus.CREATED);
         } catch (Exception e) {
+            response.setMessage("Book doesn't found");
             logger.info("Book doesn't found");
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -94,7 +107,6 @@ public class LibraryController {
     public ResponseEntity<Response> deleteBook(@PathVariable(value = "id") String id){
         try {
             repository.deleteById(id);
-
             response.setId(id);
             response.setMessage("Book deleted");
             logger.info("Book deleted");
